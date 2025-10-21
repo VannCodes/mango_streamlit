@@ -2,7 +2,7 @@ import streamlit as st
 import altair as alt
 
 # page config
-st.set_page_conf(
+st.set_page_config(
     page_title="Mango Leaf Disease Image Instance Segmentation Using YOLOv12"
     page_icon="🥭"
     layout="wide"
