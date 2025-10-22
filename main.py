@@ -2,7 +2,11 @@ import streamlit as st
 import altair as alt
 import os
 import random
+import cv2
+import numpy as np
+import tempfile
 from PIL import Image
+from ultralytics import YOLO
 
 # page config
 st.set_page_config(
@@ -41,8 +45,8 @@ with st.sidebar:
 
     st.subheader("Relevant Links")
     st.markdown("🍃 [MangoLeafDB Dataset](https://data.mendeley.com/datasets/hxsnvwty3r/1)")
-    st.markdown("🤖 [Roboflow](https://universe.roboflow.com/artificial-intelligence-u9ca8/mango-leaf-image-detection-qvw37)")
-    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1xwaCdEhWPi_2sUwpqr9Mp2uCdcOyj45_#scrollTo=MQo1i9FqwRfd)")
+    st.markdown("🤖 [Roboflow Annotated Dataset](https://universe.roboflow.com/artificial-intelligence-u9ca8/mango-leaf-image-detection-qvw37)")
+    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1Y-VxQjGiMp-6YyM_YE-9QxSrOsL7UMrb?usp=sharing)")
     st.markdown("🗄️ [GitHub Repository](https://github.com/VannCodes/mango_streamlit.git)")
 
 # functions
@@ -87,7 +91,57 @@ def display_annotations():
             with cols[i]:
                 st.image(img, caption=f"{cls} Annotation Sample {i+1}", width='stretch')
     
+def detection():
+    model = YOLO('model/best.pt')
+    st.success("✅ YOLOv12 model loaded successfully!")
 
+    uploaded_file = st.file_uploader("Upload a mango leaf image...", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        col1, col2 = st.columns(2)
+        with col1:
+            image = Image.open(uploaded_file).convert("RGB")
+            st.image(image, caption="Input Image", use_container_width=True)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+            image.save(tmp.name)
+            img_path = tmp.name
+        results = model(img_path)
+
+        for r in results:
+            img = cv2.imread(img_path)
+
+            if r.masks is not None:
+                masks = r.masks.data.cpu().numpy()
+                for mask in masks:
+                    mask = mask.astype(np.uint8) * 255
+                    mask = cv2.resize(mask, (img.shape[1], img.shape[0]))
+                    colored_mask = np.zeros_like(img)
+                    colored_mask[:, :, 2] = mask  # red channel
+                    img = cv2.addWeighted(img, 1.0, colored_mask, 0.5, 0)
+
+            boxes = r.boxes.xyxy.cpu().numpy()
+            scores = r.boxes.conf.cpu().numpy()
+            class_ids = r.boxes.cls.cpu().numpy().astype(int)
+            names = model.names
+
+            for box, score, cls_id in zip(boxes, scores, class_ids):
+                x1, y1, x2, y2 = map(int, box)
+                label = f"{names[cls_id]} {score:.2f}"
+
+                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
+                text_y = y1 - 10  # 10 pixels above the box
+                if text_y < 0:
+                    text_y = y1 + 20
+                cv2.putText(img, label, (x1, text_y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2,
+                            lineType=cv2.LINE_AA)
+
+            img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            with col2:
+                st.image(img_rgb, caption=f"Predicted Image", use_container_width=True)
+
+    
 # About page
 if st.session_state.page_selection == "about":
     st.header("ℹ️ About")
@@ -129,3 +183,54 @@ The annotated dataset is publicly available in Roboflow listed as [Mango Leaf Im
 Provided below are the screenshots of some of the annotations performed on the seven classes. 
 """)
     display_annotations()
+
+# Augmentation page
+if st.session_state.page_selection == "augmentation":
+    st.header("⬆️ Augmentation")
+    st.markdown("""
+    Prior to augmentation, the train:validation:test was split into 70:15:15 ratio. With augmentation, the number of samples in the training set tripled, which resulted to a new ratio of 88:6:6. 
+The tables below show the distribution of samples in the three sets before and after augmentation.
+                
+### Before Augmentation
+                
+| Train | Validation | Test |
+|-------|------------|------|
+| 2435 | 522 | 522 |
+
+**Total = 3479**                
+
+### After Augmentation
+| Train | Validation | Test |
+|-------|------------|------|
+| 7314 | 522 | 519 |
+
+**Total = 8355**             
+___
+
+The specification of augmentations applied is listed below, as provided by Roboflow, which used the default arguments.
+
+## Augmentations                
+* `Outputs per training example`: 3
+* `Flip`: Horizontal, Vertical
+* `90° Rotate`: Clockwise, Counter-Clockwise, Upside Down
+* `Crop`: 0% Minimum Zoom, 20% Maximum Zoom
+* `Rotation`: Between -15° and +15°
+* `Grayscale`: Apply to 15% of images
+* `Hue`: Between -15° and +15°
+* `Saturation`: Between -25% and +25%
+* `Brightness`: Between -15% and +15%
+* `Blur`: Up to 2.5px
+* `Noise`: Up to 0.1% of pixels
+
+Likewise, the preprocessing steps are list below, as also provided by Roboflow, which used the default arguments.
+
+## Preprocessing                
+* `Auto-Orient`: Applied
+* `Resize`: Stretch to 640x640
+                
+""")
+# Training Results page
+
+# Detection page
+if st.session_state.page_selection == "detection":
+    detection()
