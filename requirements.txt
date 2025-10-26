@@ -1,6 +1,5 @@
 streamlit
 altair
-cv2
 numpy
 tempfile
 PIL
