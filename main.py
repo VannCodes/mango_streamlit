@@ -46,7 +46,7 @@ with st.sidebar:
     st.subheader("Relevant Links")
     st.markdown("🍃 [MangoLeafDB Dataset](https://data.mendeley.com/datasets/hxsnvwty3r/1)")
     st.markdown("🤖 [Roboflow Annotated Dataset](https://universe.roboflow.com/artificial-intelligence-u9ca8/mango-leaf-image-detection-qvw37)")
-    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1Y-VxQjGiMp-6YyM_YE-9QxSrOsL7UMrb?usp=sharing)")
+    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1R5DKGA0dwMOycI6e-XdAJe0rFKGbQjrX?usp=sharing)")
     st.markdown("🗄️ [GitHub Repository](https://github.com/VannCodes/mango_streamlit.git)")
 
 # functions
@@ -93,14 +93,15 @@ def display_annotations():
     
 def detection():
     model = YOLO('model/best.pt')
-    st.success("✅ YOLOv12 model loaded successfully!")
+    st.success("✅ YOLOv12 segmentation model loaded successfully!")
 
     uploaded_file = st.file_uploader("Upload a mango leaf image...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         col1, col2 = st.columns(2)
         with col1:
+            st.subheader("Input")
             image = Image.open(uploaded_file).convert("RGB")
-            st.image(image, caption="Input Image", use_container_width=True)
+            st.image(image, use_container_width=True)
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
             image.save(tmp.name)
@@ -130,7 +131,8 @@ def detection():
 
                 cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-                text_y = y1 - 10  # 10 pixels above the box
+                offset = 10
+                text_y = y1 + offset
                 if text_y < 0:
                     text_y = y1 + 20
                 cv2.putText(img, label, (x1, text_y),
@@ -139,7 +141,8 @@ def detection():
 
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             with col2:
-                st.image(img_rgb, caption=f"Predicted Image", use_container_width=True)
+                st.subheader("Output")
+                st.image(img_rgb, use_container_width=True)
 
     
 # About page
@@ -149,9 +152,10 @@ if st.session_state.page_selection == "about":
     This is a machine project for instance segmentation of mango leaf disease images for detection task using the YOLOv12 model. 
 The image samples were sourced from the [MangoLeafBD Dataset](https://data.mendeley.com/datasets/hxsnvwty3r/1), which consists of 
 different images of mango leaves diagnosed with and without diseases. Annotation and augmentation was done in Roboflow to enhance 
-the model's performance. The trained model achieved a [insert mAP score], indicating how well it performed for the detection task.
+the model's performance. The trained model achieved an outstanding **99.5% mAP50 and 98.9% mAP50-95 scores** on the validation set, with its best performance being on the 79th epoch, 
+indicating how well it performed for the detection task.
 
-This Streamlit website application is for demonstrating the outcome of the machine project.
+This Streamlit website application is for the documentation and demonstration of the outcome of the machine project.
                 
 ### Pages
 - 🍃 `Dataset` - Provides a brief description of the MangoLeafBD dataset use in the machine project and random, resized (640x640) image samples from different classes.
@@ -159,7 +163,6 @@ This Streamlit website application is for demonstrating the outcome of the machi
 - ⬆️ `Augmentation` - Details the train:validation:test ratio before and after augmentation and enumerates preprocessing steps and filters used in Roboflow.
 - 🏋️‍♀️ `Training Results` - Shows the YOLOv12 model's training results in tabular and graphical format.
 - 👁 `Detection` - Testing playground for users that allows them to upload images of mango leaves to assess the model's performance in unseen data.
-    
 """)
     
 # Dataset page
@@ -167,7 +170,7 @@ if st.session_state.page_selection == "dataset":
     st.header("🍃 Dataset")
     st.markdown("""
     The [MangoLeafDB Dataset](https://data.mendeley.com/datasets/hxsnvwty3r/1) is a dataset of 4000 image samples of mango leaves belonging from eight different classes that 
-are equally distributed: `Anthracnose`, `Bacterial Canker`, `Cutting Weevil`, `Die Back`, `Gall Midge`, `Healthy`, `Powdery Mildew`, and `Sooty Mould`. The methodology of the project excluded
+are equally distributed (500 per class): `Anthracnose`, `Bacterial Canker`, `Cutting Weevil`, `Die Back`, `Gall Midge`, `Healthy`, `Powdery Mildew`, and `Sooty Mould`. The methodology of the project excluded
 the Cutting Weevil class due to the lack of suitable annotation tools for instance segmentation with its complex shape. All images indicate symptoms of diseases caused by fungi, bacteria, and pathogens, 
 but for images belonging from the Healthy class. The original size of the images is (240x320) but was resized to (640x640) in the web application for presentation purposes.
 """)
@@ -233,4 +236,5 @@ Likewise, the preprocessing steps are list below, as also provided by Roboflow, 
 
 # Detection page
 if st.session_state.page_selection == "detection":
+    st.header("👁 Detection")
     detection()
