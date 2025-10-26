@@ -1,6 +1,6 @@
 streamlit
 altair
 numpy
-PIL
+pillow
 opencv-python
 ultralytics
