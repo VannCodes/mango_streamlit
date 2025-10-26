@@ -1,6 +1,5 @@
 streamlit
 altair
-random
 cv2
 numpy
 tempfile
