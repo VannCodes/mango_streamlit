@@ -225,7 +225,7 @@ The specification of augmentations applied is listed below, as provided by Robof
 * `Blur`: Up to 2.5px
 * `Noise`: Up to 0.1% of pixels
 
-Likewise, the preprocessing steps are list below, as also provided by Roboflow, which used the default arguments.
+Likewise, the preprocessing steps are listed below, as also provided by Roboflow, which used the default arguments.
 
 ## Preprocessing                
 * `Auto-Orient`: Applied
@@ -233,7 +233,83 @@ Likewise, the preprocessing steps are list below, as also provided by Roboflow, 
                 
 """)
 # Training Results page
+if st.session_state.page_selection == "training results":
+    st.header("🏋️‍♀️ Training Results")
+    col1, col2 = st.columns(2)
+    IMG_WIDTH = 640
+    IMG_HEIGHT = 420
 
+    with col1:
+        st.subheader("Total Training Loss")
+        tt_loss = Image.open("resource/graphs/training_total_loss.png")
+        tt_loss = tt_loss.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(tt_loss, width='stretch')
+        st.markdown(
+            """
+            The Total Training Loss curve illustrates the model's overall optimization performance across 
+            all three components: segmentation, classification, and bounding box. After epoch 30, the curve steadily flattens out 
+            and settles close to 1.0, indicating that the model has learned consistently and effectively with little overfitting. 
+            This consistent convergence is a result of balanced optimization for each task component and strong overall training stability.
+        """)
+
+        st.subheader("Bounding Box mAP50 Results")
+        box = Image.open("resource/graphs/map50_box_results.png")
+        box = box.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(box, width='stretch')
+        st.markdown(
+            """
+            The model's high detection accuracy during training is demonstrated by the mAP50 (Bounding Box) curve. After a small early fluctuation 
+            over the first few epochs, the curve begins to rise significantly and stabilizes around 1.0 after around the tenth epoch. This sharp 
+            increase and long-lasting plateau show that the model picked up the ability to locate objects with remarkable accuracy very fast, 
+            and it continued to perform consistently during the following epochs.
+        """)
+
+        st.subheader("Normalized Confusion Matrix")
+        matrix = Image.open("resource/graphs/confusion_matrix_normalized.png")
+        matrix = matrix.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(matrix, width='stretch')
+        st.markdown(
+            """
+            The confusion matrix represents the model’s classification performance across all categories. 
+            Each row represents the true class, and each column represents the predicted class. The model achieved excellent overall performance, 
+            signifying near-perfect classification for most classes. All classes achieved 100% recall, meaning the model correctly identified all 
+            instances of these diseases. The only notable area of weakness was observed in the Background class, where a few instances were 
+            misclassified, likely due to visual similarities or inconsistencies during manual annotation.
+        """)
+
+    with col2:
+        st.subheader("Box, Seg, and Cls Training Losses")
+        losses = Image.open("resource/graphs/combined_loss_curves.png")
+        losses = losses.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(losses, width='stretch')
+        st.markdown(
+            """
+            The Bounding Box, Class, and Segmentation Training Loss curves in collectively demonstrate the model’s progressive improvement in 
+            spatial localization, class discrimination, and pixel-level mask prediction. All three losses show steep early declines during the 
+            first 10–15 epochs, indicating rapid initial learning, followed by smooth convergence and stabilization at low magnitudes after 
+            approximately epoch 30.
+        """)
+
+        st.subheader("Mask mAP50 Results")
+        mask = Image.open("resource/graphs/map50_mask_results.png")
+        mask = mask.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(mask, width='stretch')
+        st.markdown(
+            """
+            The mAP50 (Mask) curve starts at about 0.90, goes through a few small fluctuations in the early epochs, and then swiftly rises to 0.99, 
+            where it stays almost constant for the remainder of the training period. The model successfully learnt high-quality mask segmentation, 
+            attaining accurate object delineation and constant accuracy across all epochs, as evidenced by this near-perfect performance.
+        """)
+        
+        st.subheader("Model Testing Results")
+        testing = Image.open("resource/graphs/test_images.jpg")
+        testing = testing.resize((IMG_WIDTH, IMG_HEIGHT))
+        st.image(testing, width='stretch')
+        st.markdown(
+            """
+            The performance of the YOLOv12 segmentation model on unseen test images demonstrates how well it detects and applies segmentation masks 
+            on mango leaves with high confidence scores. The model is able to perform well even with the differences in image orientation.
+        """)
 # Detection page
 if st.session_state.page_selection == "detection":
     st.header("👁 Detection")
