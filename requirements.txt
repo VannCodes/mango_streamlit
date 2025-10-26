@@ -1,6 +1,5 @@
 streamlit
 altair
-os
 random
 cv2
 numpy
