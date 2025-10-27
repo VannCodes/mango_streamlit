@@ -161,7 +161,7 @@ This Streamlit website application is for the documentation and demonstration of
 - 🍃 `Dataset` - Provides a brief description of the MangoLeafBD dataset use in the machine project and random, resized (640x640) image samples from different classes.
 - ✏️ `Annotation` - Provides samples of annotated images using Roboflow.
 - ⬆️ `Augmentation` - Details the train:validation:test ratio before and after augmentation and enumerates preprocessing steps and filters used in Roboflow.
-- 🏋️‍♀️ `Training Results` - Shows the YOLOv12 model's training results in tabular and graphical format.
+- 🏋️‍♀️ `Training Results` - Shows the YOLOv12 model's training results in graphical format.
 - 👁 `Detection` - Testing playground for users that allows them to upload images of mango leaves to assess the model's performance in unseen data.
 """)
     
