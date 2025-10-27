@@ -136,7 +136,7 @@ def detection():
                 if text_y < 0:
                     text_y = y1 + 20
                 cv2.putText(img, label, (x1, text_y),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2,
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2,
                             lineType=cv2.LINE_AA)
 
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
