@@ -192,22 +192,19 @@ if st.session_state.page_selection == "augmentation":
     st.header("⬆️ Augmentation")
     st.markdown("""
     Prior to augmentation, the train:validation:test was split into 70:15:15 ratio. With augmentation, the number of samples in the training set tripled, which resulted to a new ratio of 88:6:6. 
-The tables below show the distribution of samples in the three sets before and after augmentation.
-                
-### Before Augmentation
+The tables below show the distribution of samples in the three sets before and after augmentation.                
+""")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(
+            """
+            ### Before Augmentation
                 
 | Train | Validation | Test |
 |-------|------------|------|
 | 2435 | 522 | 522 |
 
-**Total = 3479**                
-
-### After Augmentation
-| Train | Validation | Test |
-|-------|------------|------|
-| 7314 | 522 | 519 |
-
-**Total = 8355**             
+**Total = 3479**
 ___
 
 The specification of augmentations applied is listed below, as provided by Roboflow, which used the default arguments.
@@ -224,14 +221,25 @@ The specification of augmentations applied is listed below, as provided by Robof
 * `Brightness`: Between -15% and +15%
 * `Blur`: Up to 2.5px
 * `Noise`: Up to 0.1% of pixels
+        """)
+    with col2:
+        st.markdown(
+            """
+            ### After Augmentation
+| Train | Validation | Test |
+|-------|------------|------|
+| 7314 | 522 | 519 |
+
+**Total = 8355**
+___
 
 Likewise, the preprocessing steps are listed below, as also provided by Roboflow, which used the default arguments.
 
 ## Preprocessing                
 * `Auto-Orient`: Applied
 * `Resize`: Stretch to 640x640
-                
-""")
+        """)
+
 # Training Results page
 if st.session_state.page_selection == "training results":
     st.header("🏋️‍♀️ Training Results")
