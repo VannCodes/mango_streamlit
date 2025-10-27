@@ -25,7 +25,7 @@ def set_page_selection(page):
 
 # sidebar
 with st.sidebar:
-    st.title("Mango Leaf Disease Image Detection Instance Segmentation Using YOLOv12 🥭")
+    st.title("Mango Leaf Disease Image Detection and Instance Segmentation Using YOLOv12 🥭")
     st.subheader("Pages")
     if st.button("ℹ️ About", width='stretch', on_click=set_page_selection, args=('about',)):
         st.session_state.page_selection = "about"
