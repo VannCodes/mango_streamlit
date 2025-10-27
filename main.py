@@ -46,7 +46,7 @@ with st.sidebar:
     st.subheader("Relevant Links")
     st.markdown("🍃 [MangoLeafDB Dataset](https://data.mendeley.com/datasets/hxsnvwty3r/1)")
     st.markdown("🤖 [Roboflow Annotated Dataset](https://universe.roboflow.com/artificial-intelligence-u9ca8/mango-leaf-image-detection-qvw37)")
-    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1R5DKGA0dwMOycI6e-XdAJe0rFKGbQjrX?usp=sharing)")
+    st.markdown("📔 [Google Colab Notebook](https://colab.research.google.com/drive/1Brkn02jJj5Y0SqI8GFjameKClZXUH187?usp=sharing)")
     st.markdown("🗄️ [GitHub Repository](https://github.com/VannCodes/mango_streamlit.git)")
 
 # functions
